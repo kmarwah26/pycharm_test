@@ -51,7 +51,7 @@ jobs:
       with:
         databricks-host: ${{ secrets.DATABRICKS_HOST }}
         databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
-        local-notebook-path: "sql/Danilo Schemas and Tables.sql"
+        local-notebook-path: "sql/Kunal_Schemas_Tables.sql"
         workspace-temp-dir: "/Users/danilo.deoliveiraperez@databricks.com/CICD/data-engineer-learning-path-source-published/Source"
         new-cluster-json: >
           {
