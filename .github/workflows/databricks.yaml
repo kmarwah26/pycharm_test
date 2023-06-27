@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-to-databricks:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install databricks-cli
+
+    - name: Validate Connection to Databricks Workspace
+      env:
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      run: |
+        echo "Pinging $DATABRICKS_HOST..."
+        curl -s $DATABRICKS_HOST
+        if [ $? -ne 0 ]; then
+          echo "Unable to reach $DATABRICKS_HOST. Please verify your Databricks host URL."
+          exit 1
+        else
+          echo "Connection to $DATABRICKS_HOST is reachable."
+        fi
+
+    - name: Deploy Notebook to Databricks
+      env:
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      run: |
+        echo "[DEFAULT]" > ~/.databrickscfg
+        echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+        echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+        databricks workspace import --overwrite --language SQL "sql/Danilo Schemas and Tables.sql" "/Users/danilo.deoliveiraperez@databricks.com/CICD/data-engineer-learning-path-source-published/Source/DE 3 - Delta Lake/Danilo Schemas and Tables.sql"
+
+    - name: Run Notebook on Databricks
+      uses: databricks/run-notebook@v0
+      with:
+        databricks-host: ${{ secrets.DATABRICKS_HOST }}
+        databricks-token: ${{ secrets.DATABRICKS_TOKEN }}
+        local-notebook-path: "sql/Danilo Schemas and Tables.sql"
+        workspace-temp-dir: "/Users/danilo.deoliveiraperez@databricks.com/CICD/data-engineer-learning-path-source-published/Source"
+        new-cluster-json: >
+          {
+            "num_workers": 1,
+            "spark_version": "11.3.x-scala2.12",
+            "node_type_id": "i3.xlarge"
+          }
