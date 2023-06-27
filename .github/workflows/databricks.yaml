@@ -44,7 +44,7 @@ jobs:
         echo "[DEFAULT]" > ~/.databrickscfg
         echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
         echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
-        databricks workspace import --overwrite --language SQL "sql/Kunal_Schemas_Tables.sql" "/Users/danilo.deoliveiraperez@databricks.com/CICD/data-engineer-learning-path-source-published/Source/DE 3 - Delta Lake/Danilo Schemas and Tables.sql"
+        databricks workspace import --overwrite --language SQL "sql/Kunal_Schemas_Tables.sql" "/Users/danilo.deoliveiraperez@databricks.com/CICD/data-engineer-learning-path-source-published/Source/DE 3 - Delta Lake/Kunal_Schemas_Tables.sql"
 
     - name: Run Notebook on Databricks
       uses: databricks/run-notebook@v0
